@@ -5,7 +5,7 @@ import allure
 class Profile(BasePage):
     """Страница профиля"""
 
-    TITLE = (By.XPATH, '//h1[text()="Мои данные"]')
+    TITLE = (By.XPATH, '//h1[text()="Мои данные"]') # текст "Мои данные"
 
     def title(self):
         return self.get_text(self.TITLE)

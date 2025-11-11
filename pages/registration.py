@@ -7,16 +7,16 @@ import time
 class Registration(BasePage):
     """Страница регистрации"""
 
-    NAME = (By.XPATH, "//input[@name='USER_NAME']")
-    LAST_NAME = (By.XPATH, "//input[@name='USER_LAST_NAME']")
-    USER_LOGIN = (By.XPATH, "//input[@name='USER_LOGIN']")
-    USER_PASSWORD = (By.XPATH, "//input[@name='USER_PASSWORD']")
-    USER_CONFIRM_PASSWORD = (By.XPATH, "//input[@name='USER_CONFIRM_PASSWORD']")
-    USER_EMAIL = (By.XPATH, "//input[@name='USER_EMAIL']")
-    CAPTCHA_WORD = (By.XPATH, "//input[@name='captcha_word']")
-    USER_AGREEMENT = (By.XPATH, "//input[@name='USER_AGREEMENT']")
-    ACCEPT_BUTTON = (By.XPATH, "//span[text()='Принимаю']")
-    REGISTRATION_BUTTON = (By.XPATH, "//input[@name='Register']")
+    NAME = (By.XPATH, "//input[@name='USER_NAME']") # поле "Имя"
+    LAST_NAME = (By.XPATH, "//input[@name='USER_LAST_NAME']") # поле "Фамилия"
+    USER_LOGIN = (By.XPATH, "//input[@name='USER_LOGIN']") # поле "Логин"
+    USER_PASSWORD = (By.XPATH, "//input[@name='USER_PASSWORD']") # поле "Пароль"
+    USER_CONFIRM_PASSWORD = (By.XPATH, "//input[@name='USER_CONFIRM_PASSWORD']") # поле "Подтверждение пароля"
+    USER_EMAIL = (By.XPATH, "//input[@name='USER_EMAIL']") # поле "E-Mail"
+    CAPTCHA_WORD = (By.XPATH, "//input[@name='captcha_word']") # поле "Защитное поле на картинке"
+    USER_AGREEMENT = (By.XPATH, "//input[@name='USER_AGREEMENT']") # чекбокс "О персональных данных"
+    ACCEPT_BUTTON = (By.XPATH, "//span[text()='Принимаю']") # кнопка "Принять"
+    REGISTRATION_BUTTON = (By.XPATH, "//input[@name='Register']") # кнопка "Регистрация"
 
     @allure.step("Открыть страницу регистрации")
     def open_registration_page(self):

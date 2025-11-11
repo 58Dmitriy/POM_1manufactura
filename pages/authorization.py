@@ -5,10 +5,10 @@ import allure
 class Authorization(BasePage):
     """Страница авторизации"""
 
-    USER_LOGIN = (By.XPATH, '//*[@name="USER_LOGIN"]')
-    USER_PASSWORD = (By.XPATH, '//*[@name="USER_PASSWORD"]')
-    LOGIN_BUTTON = (By.XPATH, '//*[@name="Login"]')
-    ERROR_MESSAGE = (By.XPATH, '//*[@class="errortext"]')
+    USER_LOGIN = (By.XPATH, '//*[@name="USER_LOGIN"]') # поле "Логин"
+    USER_PASSWORD = (By.XPATH, '//*[@name="USER_PASSWORD"]') # поле "Пароль"
+    LOGIN_BUTTON = (By.XPATH, '//*[@name="Login"]') # кнопка "Войти"
+    ERROR_MESSAGE = (By.XPATH, '//*[@class="errortext"]') # сообщение об ошибке
 
     @allure.step("Открыть страницу логина")
     def open_login_page(self):
