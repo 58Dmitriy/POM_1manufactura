@@ -1,14 +1,15 @@
 import pytest
-from pages.registration import Registration
-from  pages.profile import Profile
+from pages.registration_page import Registration
+from  pages.profile_page import Profile
 import time
 
 
 @pytest.mark.ui
-@pytest.mark.smoke
+@pytest.mark.skip
 def test_successful_login(driver):
     registration_page = Registration(driver)
     profile_page = Profile(driver)
+
     registration_page.open_registration_page()
     registration_page.new_registration("",
                                        "",

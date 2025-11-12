@@ -34,3 +34,15 @@ class HeaderPage(BasePage):
     DISCOUNTS = (By.XPATH, "//a[@class='nav-main__link' and text()='Скидки']") # Раздел "Скидки"
     NEW = (By.XPATH, "//a[@class='nav-main__link' and text()='Новинки']") # Раздел "Новинки"
     BRANDS = (By.XPATH, "//a[@class='nav-main__link' and text()='Бренды']") # Раздел "Бренды"
+
+    @allure.step("Открыть главную страницу")
+    def open_home_page(self):
+        self.open("https://1manufactura.ru/")
+
+    def go_to_cart_page(self):
+        """Перейти в корзину"""
+        self.driver.find_element(*self.CART_BUTTON).click()
+
+    def go_to_vsadnikam_page(self):
+        """Перейти в раздел 'Всадникам'"""
+        self.driver.find_element(*self.HORSEMEN).click()
