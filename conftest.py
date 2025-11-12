@@ -8,7 +8,7 @@ import allure
 def driver():
     """Фикстура для запуска и завершения браузера"""
     options = Options()
-    options.add_argument('--headless')
+    # options.add_argument('--headless')
     options.add_argument('--start-maximized')
     driver = webdriver.Chrome(options=options)
     yield driver
