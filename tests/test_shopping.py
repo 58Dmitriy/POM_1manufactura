@@ -1,6 +1,7 @@
 import pytest
 from pages.header import HeaderPage
 from pages.vsadnikam_page import VsadnikamPage
+from pages.horses_page import HorsesPage
 from pages.cart_page import CartPage
 
 @pytest.mark.parametrize(
@@ -27,8 +28,9 @@ def test_successful_addition_of_product_to_cart(driver, bx_id):
 @pytest.mark.parametrize(
     "info",
     [
-        pytest.param(("bx_3966226736_24218", "Ветровка детская Lucky Gina синий"),
-                     id = f'bx_3966226736_24218, Ветровка детская Lucky Gina синий')
+        pytest.param(("bx_3966226736_24728", "Поло рубашка мужская с длинным рукавом чёрный")
+                     # , id = f'bx_3966226736_24728, Поло рубашка мужская с длинным рукавом чёрный'
+        )
     ]
 )
 @pytest.mark.ui
@@ -45,3 +47,31 @@ def test_product_search_and_add_via_pagination(driver, info):
     header_page.go_to_cart_page()
     assert cart_page.TITLE_CONTENTS_IN_THE_BASKET
     assert cart_page.is_product_in_cart_by_name(product_name)
+
+@pytest.mark.parametrize(
+    "info",
+    [
+        # pytest.param(
+            ("bx_3966226736_25050", "Недоуздок на неопреновых подложках MIU Equestrian Neo 2.0 фиолетовый")
+                     # , id = f'bx_3966226736_25050, Недоуздок на неопреновых подложках MIU Equestrian Neo 2.0 фиолетовый')
+    ]
+)
+@pytest.mark.ui
+@pytest.mark.smoke
+def test_product_quantity_can_be_increased_and_decreased(driver, info):
+    header_page = HeaderPage(driver)
+    cart_page = CartPage(driver)
+    horses_page = HeaderPage(driver)
+    bx_id, product_name = info
+
+    header_page.open_home_page()
+    header_page.go_to_horses_page()
+    horses_page.add_product_to_cart_by_id_with_pagination(bx_id)
+    header_page.go_to_cart_page()
+    assert cart_page.TITLE_CONTENTS_IN_THE_BASKET
+    assert cart_page.is_product_in_cart_by_name(product_name)
+
+    cart_page.plus_value()
+    cart_page.plus_value()
+    cart_page.minus_value()
+    assert cart_page.counter_value() == 2
