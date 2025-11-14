@@ -19,6 +19,7 @@ class HeaderPage(BasePage):
     """Header страниц (центральный)"""
     FAVORITES_BUTTON = (By.XPATH, "//a[@class='favorites']") # кнопка "Избранное"
     CART_BUTTON = (By.XPATH, "//a[@class='cart']") # кнопка "Корзина"
+    CART_COUNTER = (By.XPATH, "//a[@class='cart']/following::div[@class='data-small']") # счётчик корзины товара
     COMPARISON_BUTTON = (By.XPATH, "//a[@class='compare']") # кнопка "Сравнение"
     SEARCH_BUTTON = (By.XPATH, "//button[@id='btn-search-header']") # кнопка "Поиск"
 
@@ -46,3 +47,23 @@ class HeaderPage(BasePage):
     def go_to_vsadnikam_page(self):
         """Перейти в раздел 'Всадникам'"""
         self.driver.find_element(*self.HORSEMEN).click()
+
+    def go_to_horses_page(self):
+        """Перейти в раздел 'Лошадям'"""
+        self.driver.find_element(*self.HORSES).click()
+
+    def cart_counter_is_displayed(self):
+        """Проверяет, отображается ли счетчик корзины"""
+        try:
+            counter = self.driver.find_element(*self.CART_COUNTER)
+            return counter.is_displayed()
+        except:
+            return False
+
+    @allure.step("Проверить чему равен счётчик корзины")
+    def cart_counter(self):
+        """Возвращает количество товаров или 0 если счетчика нет"""
+        if self.cart_counter_is_displayed():
+            count_text = self.get_text(self.CART_COUNTER)
+            return int(count_text)
+        return 0
