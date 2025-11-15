@@ -51,6 +51,10 @@ class CartPage(BasePage):
                 return 1  # значение по умолчанию при ошибке
         return 1  # значение по умолчанию если счетчик не отображается
 
+    def enter_quantity_of_goods(self, quantity):
+        """Ручной ввод числа товаров в корзине"""
+        self.type(self.COUNTER_VALUE, quantity)
+
     @allure.step("Уменьшаем количество товаров на 1")
     def minus_value(self):
         self.driver.find_element(*self.COUNTER_MINUS).click()
