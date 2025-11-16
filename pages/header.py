@@ -18,6 +18,7 @@ class HeaderPage(BasePage):
 
     """Header страниц (центральный)"""
     FAVORITES_BUTTON = (By.XPATH, "//a[@class='favorites']") # кнопка "Избранное"
+    FAVORITES_COUNTER = (By.XPATH, "") # счётчик товаров в избранном
     CART_BUTTON = (By.XPATH, "//a[@class='cart']") # кнопка "Корзина"
     CART_COUNTER = (By.XPATH, "//a[@class='cart']/following::div[@class='data-small']") # счётчик корзины товара
     COMPARISON_BUTTON = (By.XPATH, "//a[@class='compare']") # кнопка "Сравнение"
@@ -39,6 +40,10 @@ class HeaderPage(BasePage):
     @allure.step("Открыть главную страницу")
     def open_home_page(self):
         self.open("https://1manufactura.ru/")
+
+    def go_to_favorites_page(self):
+        """Перейти в избранное"""
+        self.driver.find_element(*self.FAVORITES_BUTTON).click()
 
     def go_to_cart_page(self):
         """Перейти в корзину"""

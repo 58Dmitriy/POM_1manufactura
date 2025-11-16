@@ -4,6 +4,7 @@ from pages.vsadnikam_page import VsadnikamPage
 from pages.horses_page import HorsesPage
 from pages.cart_page import CartPage
 from fixtures.parametrize_fixtures import *
+import time
 
 
 @breeches_product_parametrize
@@ -76,3 +77,13 @@ def test_manual_entry_of_products(driver, bx_id, product_name):
 
     cart_page.enter_quantity_of_goods(3)
     assert cart_page.counter_value() == 3
+
+@halter_product_parametrize
+def test_open_product_card(driver, bx_id, product_name):
+    header_page = HeaderPage(driver)
+    horses_page = HeaderPage(driver)
+
+    header_page.open_home_page()
+    horses_page.open_product_card_with_pagination(bx_id)
+    time.sleep(10)
+

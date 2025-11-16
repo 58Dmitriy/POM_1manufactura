@@ -33,6 +33,7 @@ class BasePage(object):
 
     CATALOG_ITEM = "//div[@class='catalog']/child::div[@id='{bx_id}']" # товар в каталоге
     ADD_TO_CART_BUTTON = (By.XPATH, ".//button[contains(@class, 'js-add-to-basket')]")  # кнопка "Добавить в корзину"
+    FAVORITES_BUTTON = (By.XPATH, ".//input[@type='checkbox']") # кнопка добавления в избранное
 
     @allure.step("Ищем товар по bx_id")
     def find_product_by_id(self, bx_id):
@@ -98,3 +99,8 @@ class BasePage(object):
             self.driver.execute_script("arguments[0].click();", add_button)
             return True
         return False
+
+    def open_product_card_with_pagination(self, bx_id, max_pages=10):
+        """Открытие карточки товара"""
+        element = self.find_product_by_id_with_pagination(bx_id, max_pages)
+        element.find_element(By.TAG_NAME, "a").click()
