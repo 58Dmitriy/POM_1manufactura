@@ -24,3 +24,15 @@ breeches_product_parametrize = pytest.mark.parametrize(
     ],
     ids=["breeches_white"]
 )
+
+
+FAVORITES_PRODUCTS = [
+    "bx_3966226736_25050",
+    "bx_3966226736_24966",
+    "bx_3966226736_24815"
+]
+
+horse_favorites_product_parametrize = pytest.mark.parametrize(
+    "bx_id",
+    FAVORITES_PRODUCTS
+)
