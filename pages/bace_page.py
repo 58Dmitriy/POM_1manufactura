@@ -104,3 +104,15 @@ class BasePage(object):
         """Открытие карточки товара"""
         element = self.find_product_by_id_with_pagination(bx_id, max_pages)
         element.find_element(By.TAG_NAME, "a").click()
+
+    def add_in_favorites(self, bx_id, max_pages):
+        """Нажать кнопку 'Добавить в избранное'"""
+        element = self.find_product_by_id_with_pagination(bx_id, max_pages)
+        checkbox = element.find_element(By.XPATH, ".//input[@type='checkbox']")
+        self.driver.execute_script("arguments[0].click();", checkbox)
+
+    def add_multiple_to_favorites(self, products_list, max_pages=10):
+        """Добавить несколько товаров в избранное"""
+        for bx_id in products_list:
+            self.add_in_favorites(bx_id, max_pages)
+
