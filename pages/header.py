@@ -57,6 +57,10 @@ class HeaderPage(BasePage):
         """Перейти в раздел 'Лошадям'"""
         self.driver.find_element(*self.HORSES).click()
 
+    def go_to_stable_page(self):
+        """Перейти в раздел 'Лошадям'"""
+        self.driver.find_element(*self.STABLE).click()
+
     def cart_counter_is_displayed(self):
         """Проверяет, отображается ли счетчик корзины"""
         try:

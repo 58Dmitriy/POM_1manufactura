@@ -10,7 +10,9 @@ class VsadnikamPage(BasePage):
 
     TITLE = (By.XPATH, "//h1[text()='Товары для всадников']")  # текст "Товары для всадников"
 
-
+    @allure.step("Проверяем наличие текста на странице")
+    def title(self):
+        return self.get_text(self.TITLE)
 
 
 

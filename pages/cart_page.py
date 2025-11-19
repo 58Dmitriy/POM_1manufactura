@@ -13,6 +13,8 @@ class CartPage(BasePage):
     COUNTER_VALUE = (By.XPATH, "//input[@class='counter__value']") # счётчик определённого товара
     COUNTER_MINUS = (By.XPATH, "//span[@class='counter__minus']") # уменьшить число товаров
     COUNTER_PLUS = (By.XPATH, "//span[@class='counter__plus']") # увеличить число товаров
+    GO_TO_PURCHASE_BUTTON = (By.XPATH, "//a[contains(@class,'go2order')]")
+
 
     @allure.step("Открыть страницу корзины товаров")
     def open_cart_page(self):
@@ -62,4 +64,9 @@ class CartPage(BasePage):
     @allure.step("Увеличиваем количество товаров на 1")
     def plus_value(self):
         self.driver.find_element(*self.COUNTER_PLUS).click()
+
+    @allure.step("Нажать на кнопку 'Перейти к покупке'")
+    def go_to_purchase(self):
+        """Нажать на кнопку 'Перейти к покупке'"""
+        self.driver.find_element(*self.GO_TO_PURCHASE_BUTTON).click()
 

@@ -36,3 +36,17 @@ horse_favorites_product_parametrize = pytest.mark.parametrize(
     "bx_id",
     FAVORITES_PRODUCTS
 )
+
+
+STABLE_PRODUCTS = [
+    ("bx_3966226736_22291", "Тазик резиновый 12л"),
+    ("bx_3966226736_15149", "Набор для уборки HO")
+]
+
+stable_product_parametrize = pytest.mark.parametrize(
+    "bx_id, product_name",
+    [
+        ("bx_3966226736_23560", "Игрушка для лошади большой шар для корма фиолетовый")
+    ],
+    ids=["Rubber basin 12L"]
+)
