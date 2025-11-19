@@ -7,6 +7,8 @@ from pages.stable_page import StablePage
 from pages.order_make_page import OrderMakePage
 from pages.order_page import OrderPage
 from fixtures.parametrize_fixtures import *
+from utils.auth_helper import *
+from utils.test_data import *
 import time
 
 
@@ -15,6 +17,7 @@ import time
 @pytest.mark.smoke
 def test_placing_an_order(driver, bx_id, product_name):
     authorization_page = Authorization(driver)
+    login, password = get_auth_credentials()
     profile_page = Profile(driver)
     header_page = HeaderPage(driver)
     cart_page = CartPage(driver)
@@ -23,7 +26,7 @@ def test_placing_an_order(driver, bx_id, product_name):
     order_page = OrderPage(driver)
 
     authorization_page.open_login_page()
-    authorization_page.login("test10", "0000000")
+    authorization_page.login(login, password)
     assert profile_page.title().lower() == "мои данные"
     header_page.open_home_page()
     header_page.go_to_stable_page()
@@ -35,11 +38,7 @@ def test_placing_an_order(driver, bx_id, product_name):
     assert order_make_page.title().lower() == "тип покупателя и регион доставки"
     order_make_page.individual_radiobutton()
     order_make_page.payment_upon_delivery_radiobutton()
-    order_make_page.enter_information_about_the_buyer("test",
-                                                      "test",
-                                                      "test",
-                                                      "+79999999999",
-                                                      "test10@mail.ru")
+    order_make_page.enter_information_about_the_buyer(TEST_BUYER)
     order_make_page.product_check(product_name)
     order_make_page.consent_to_the_processing_of_personal_data()
     order_make_page.place_order()

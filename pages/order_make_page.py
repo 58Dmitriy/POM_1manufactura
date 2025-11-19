@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pages.bace_page import BasePage
 import allure
+from utils.test_data import *
 
 
 class OrderMakePage(BasePage):
@@ -54,12 +55,12 @@ class OrderMakePage(BasePage):
         self.driver.execute_script("arguments[0].click();", radiobutton)
 
     @allure.step("Заполняем данные о покупателе")
-    def enter_information_about_the_buyer(self,lastname, name, surname, telephone, email):
-        self.type(self.LASTNAME, lastname)
-        self.type(self.NAME, name)
-        self.type(self.SURNAME, surname)
-        self.type(self.TELEPHONE, telephone)
-        self.type(self.EMAIL, email)
+    def enter_information_about_the_buyer(self, buyer_info: BuyerInfo):
+        self.type(self.LASTNAME, buyer_info.last_name)
+        self.type(self.NAME, buyer_info.name)
+        self.type(self.SURNAME, buyer_info.surname_name)
+        self.type(self.TELEPHONE, buyer_info.phone)
+        self.type(self.EMAIL, buyer_info.email)
 
     @allure.step("Проверяем наличие товара")
     def product_check(self, product_name):

@@ -1,6 +1,7 @@
 import pytest
 from pages.authorization import Authorization
 from  pages.profile_page import Profile
+from utils.auth_helper import *
 
 
 @pytest.mark.ui
@@ -8,8 +9,10 @@ from  pages.profile_page import Profile
 def test_successful_login(driver):
     authorization_page = Authorization(driver)
     profile_page = Profile(driver)
+    login, password = get_auth_credentials()
+
     authorization_page.open_login_page()
-    authorization_page.login("test10", "0000000")
+    authorization_page.login(login, password)
     assert profile_page.title().lower() == "мои данные"
 
 @pytest.mark.parametrize(
