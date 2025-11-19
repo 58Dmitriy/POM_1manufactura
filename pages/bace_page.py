@@ -3,11 +3,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import allure
+from selenium.webdriver.common.action_chains import ActionChains
 
 class BasePage(object):
     def __init__(self, driver):
         self.driver: WebDriver = driver
         self.wait: WebDriverWait = WebDriverWait(self.driver, 10)
+
+    def scroll_to_element(self, element):
+        self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
 
     @allure.step("Открываем страницу: {url}")
     def open(self, url):
@@ -50,9 +54,10 @@ class BasePage(object):
         """Добавить товар в корзину по 'bx_id' """
         element = self.find_product_by_id(bx_id)
         if element:
-            # element.find_element(*self.ADD_TO_CART_BUTTON).click()
             add_button = element.find_element(*self.ADD_TO_CART_BUTTON)
-            self.driver.execute_script("arguments[0].click();", add_button)
+            self.scroll_to_element(add_button)
+            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(add_button))
+            add_button.click()
             return True
         return False
 

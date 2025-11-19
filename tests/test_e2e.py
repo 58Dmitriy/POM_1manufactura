@@ -1,0 +1,47 @@
+import pytest
+from pages.header import HeaderPage
+from pages.authorization import Authorization
+from  pages.profile_page import Profile
+from pages.cart_page import CartPage
+from pages.stable_page import StablePage
+from pages.order_make_page import OrderMakePage
+from pages.order_page import OrderPage
+from fixtures.parametrize_fixtures import *
+import time
+
+
+@stable_product_parametrize
+@pytest.mark.ui
+@pytest.mark.smoke
+def test_placing_an_order(driver, bx_id, product_name):
+    authorization_page = Authorization(driver)
+    profile_page = Profile(driver)
+    header_page = HeaderPage(driver)
+    cart_page = CartPage(driver)
+    stable_page = StablePage(driver)
+    order_make_page = OrderMakePage(driver)
+    order_page = OrderPage(driver)
+
+    authorization_page.open_login_page()
+    authorization_page.login("test10", "0000000")
+    assert profile_page.title().lower() == "мои данные"
+    header_page.open_home_page()
+    header_page.go_to_stable_page()
+    assert stable_page.title().lower() == "товары для конюшни"
+    stable_page.add_product_to_cart_by_id_with_pagination(bx_id)
+    header_page.go_to_cart_page()
+    cart_page.is_product_in_cart_by_name(product_name)
+    cart_page.go_to_purchase()
+    assert order_make_page.title().lower() == "тип покупателя и регион доставки"
+    order_make_page.individual_radiobutton()
+    order_make_page.payment_upon_delivery_radiobutton()
+    order_make_page.enter_information_about_the_buyer("test",
+                                                      "test",
+                                                      "test",
+                                                      "+79999999999",
+                                                      "test10@mail.ru")
+    order_make_page.product_check(product_name)
+    order_make_page.consent_to_the_processing_of_personal_data()
+    order_make_page.place_order()
+    assert order_page.title().lower() == "оплата при получении (картой или наличными при получении заказа)"
+

@@ -10,7 +10,7 @@ def test_successful_login(driver):
     profile_page = Profile(driver)
     authorization_page.open_login_page()
     authorization_page.login("test10", "0000000")
-    assert profile_page.title().text.lower() == "мои данные"
+    assert profile_page.title().lower() == "мои данные"
 
 @pytest.mark.parametrize(
     "creds",
@@ -27,5 +27,5 @@ def test_login_invalid_login(driver, creds):
     authorization_page.open_login_page()
     user_login, password = creds
     authorization_page.login(user_login, password)
-    assert authorization_page.error_message().text == "Неверный логин или пароль."
+    assert authorization_page.error_message() == "Неверный логин или пароль."
 
