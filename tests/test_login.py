@@ -1,6 +1,6 @@
 import pytest
 from pages.authorization import Authorization
-from  pages.profile_page import Profile
+from pages.profile_page import Profile
 from utils.auth_helper import *
 
 

@@ -10,6 +10,7 @@ class BasePage(object):
         self.driver: WebDriver = driver
         self.wait: WebDriverWait = WebDriverWait(self.driver, 10)
 
+    @allure.step("Скролл до элемента")
     def scroll_to_element(self, element):
         self.driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", element)
 
@@ -27,6 +28,7 @@ class BasePage(object):
         elem.clear()
         elem.send_keys(text)
 
+    @allure.step("Получить текст элемента")
     def get_text(self, locator):
         element = self.wait.until(EC.presence_of_element_located(locator))
         return element.text
@@ -39,7 +41,7 @@ class BasePage(object):
     ADD_TO_CART_BUTTON = (By.XPATH, ".//button[contains(@class, 'js-add-to-basket')]")  # кнопка "Добавить в корзину"
     FAVORITES_BUTTON = (By.XPATH, ".//input[@type='checkbox']") # кнопка добавления в избранное
 
-    @allure.step("Ищем товар по bx_id")
+    @allure.step("Найти товар по bx_id")
     def find_product_by_id(self, bx_id):
         """Найти продукт по 'bx_id' """
         try:
@@ -49,7 +51,7 @@ class BasePage(object):
         except:
             return None
 
-    @allure.step("Находим и добавляем товар в корзину по bx_id")
+    @allure.step("Найти и добавить товар в корзину по bx_id")
     def add_product_to_cart_by_id(self, bx_id):
         """Добавить товар в корзину по 'bx_id' """
         element = self.find_product_by_id(bx_id)
@@ -61,7 +63,7 @@ class BasePage(object):
             return True
         return False
 
-    @allure.step("Нажимаем кнопку перехода на следующую страницу")
+    @allure.step("Нажать кнопку перехода на следующую страницу")
     def go_to_next_page(self):
         """Перейти на следующую страницу"""
         try:
@@ -78,7 +80,7 @@ class BasePage(object):
         except Exception:
             return False
 
-    @allure.step("Ищем товар переходя по страницам")
+    @allure.step("Поиск товара переходя по страницам")
     def find_product_by_id_with_pagination(self, bx_id, max_pages=10):
         """Поиск товара по ID с переключением страниц"""
         for page in range(1, max_pages + 1):
@@ -94,7 +96,7 @@ class BasePage(object):
 
         return None
 
-    @allure.step("Находим и добавляем товар в корзину по bx_id с поиском по страницам")
+    @allure.step("Найти и добавить товар в корзину по bx_id с поиском по страницам")
     def add_product_to_cart_by_id_with_pagination(self, bx_id, max_pages=10):
         """Добавить товар в корзину по 'bx_id' с поиском по всем страницам"""
         element = self.find_product_by_id_with_pagination(bx_id, max_pages)
@@ -105,19 +107,23 @@ class BasePage(object):
             return True
         return False
 
+    @allure.step("Открыть карточку товара")
     def open_product_card_with_pagination(self, bx_id, max_pages=10):
         """Открытие карточки товара"""
         element = self.find_product_by_id_with_pagination(bx_id, max_pages)
         element.find_element(By.TAG_NAME, "a").click()
 
+    @allure.step("Нажать кнопку 'Добавить в избранное'")
     def add_in_favorites(self, bx_id, max_pages):
         """Нажать кнопку 'Добавить в избранное'"""
         element = self.find_product_by_id_with_pagination(bx_id, max_pages)
         checkbox = element.find_element(By.XPATH, ".//input[@type='checkbox']")
         self.driver.execute_script("arguments[0].click();", checkbox)
 
+    @allure.step("Добавить несколько товаров в избранное")
     def add_multiple_to_favorites(self, products_list, max_pages=10):
         """Добавить несколько товаров в избранное"""
         for bx_id in products_list:
             self.add_in_favorites(bx_id, max_pages)
+
 
