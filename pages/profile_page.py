@@ -13,6 +13,7 @@ class Profile(BasePage):
     SAVE_INFO = (By.XPATH, "//font[@class='notetext']") # текст "Изменения сохранены"
     ERROR_TEXT = (By.XPATH, "//font[@class='errortext']") # текст "Неверное подтверждение пароля."
     SAVE_BUTTON = (By.XPATH, "//input[@name='save']") # кнопка "Сохранить изменения"
+    ADDRESS_BOOK_BUTTON = (By.XPATH, "//a[contains(@class,'cabinet-nav__link--address')]") # кнопка "Адресная книга"
 
     # Блок "Расскажи о себе"
     LAST_NAME = (By.XPATH, "//input[@name='LAST_NAME']") # поле ввода "Фамилия"
@@ -35,7 +36,7 @@ class Profile(BasePage):
     NEW_PASSWORD_CONFIRM = (By.XPATH, "//input[@name='NEW_PASSWORD_CONFIRM']") # поле ввода "Повторите новый пароль"
 
 
-    @allure.step("Проверить наличие текста на странице")
+    @allure.step("Проверить наличие заголовка на странице")
     def title(self):
         return self.get_text(self.TITLE)
 
@@ -75,3 +76,7 @@ class Profile(BasePage):
     @allure.step("Проверяем сообщение об ошибке")
     def error_text(self):
         return self.get_text(self.ERROR_TEXT)
+
+    @allure.step("Нажать кнопку 'Адресная книга'")
+    def go_to_address_book(self):
+        self.driver.find_element(*self.ADDRESS_BOOK_BUTTON).click()

@@ -13,9 +13,9 @@ def test_successful_login(driver):
     registration_page.open_registration_page()
     registration_page.new_registration("",
                                        "",
-                                       "test10",
+                                       "test12",
                                        "0000000",
                                        "0000000",
-                                       "test10@mail.ru",
+                                       "test12@mail.ru",
                                        "")
-    assert profile_page.title().text.lower() == "мои данные"
+    assert profile_page.title().lower() == "мои данные"
