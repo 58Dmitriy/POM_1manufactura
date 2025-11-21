@@ -79,6 +79,8 @@ def test_manual_entry_of_products(driver, bx_id, product_name):
     assert cart_page.counter_value() == 3
 
 @halter_product_parametrize
+@pytest.mark.ui
+@pytest.mark.smoke
 def test_open_product_card(driver, bx_id, product_name):
     header_page = HeaderPage(driver)
     horses_page = HeaderPage(driver)
