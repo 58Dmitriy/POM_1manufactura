@@ -14,6 +14,14 @@ class Password:
     new_password: str
     new_password_confirm: str
 
+@dataclass
+class AddressData:
+    country: str
+    city: str
+    street: str
+    building: str
+    ap: str
+
 
 # Тестовые данные для покупателя в e2e тесте: test_placing_an_order
 TEST_BUYER = BuyerInfo(
@@ -55,4 +63,13 @@ MISSING_CURRENT_PASSWORD = Password(
     current_password="",
     new_password="0000000",
     new_password_confirm="0000000"
+)
+
+# Тестовые данные для пароля в test_address тесте: test_correct_address
+CORRECT_ADDRESS = AddressData(
+    country="Россия",
+    city="Москва",
+    street="Карла Маркса",
+    building="4",
+    ap="1"
 )
