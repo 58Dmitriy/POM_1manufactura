@@ -15,4 +15,4 @@ def driver():
     options.add_argument('--start-maximized')
     driver = webdriver.Chrome(options=options)
     yield driver
-
+    driver.quit()
