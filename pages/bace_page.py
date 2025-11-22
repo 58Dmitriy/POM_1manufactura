@@ -103,7 +103,9 @@ class BasePage(object):
 
         if element:
             add_button = element.find_element(*self.ADD_TO_CART_BUTTON)
-            self.driver.execute_script("arguments[0].click();", add_button)
+            self.scroll_to_element(add_button)
+            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(add_button))
+            add_button.click()
             return True
         return False
 
@@ -118,7 +120,9 @@ class BasePage(object):
         """Нажать кнопку 'Добавить в избранное'"""
         element = self.find_product_by_id_with_pagination(bx_id, max_pages)
         checkbox = element.find_element(By.XPATH, ".//input[@type='checkbox']")
-        self.driver.execute_script("arguments[0].click();", checkbox)
+        self.scroll_to_element(checkbox)
+        WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(checkbox))
+        checkbox.click()
 
     @allure.step("Добавить несколько товаров в избранное")
     def add_multiple_to_favorites(self, products_list, max_pages=10):

@@ -21,21 +21,10 @@ class FavoritesPage(BasePage):
 
     def is_empty_favorites_displayed(self):
         """Проверяет отображается ли сообщение о пустом списке избранного"""
-        print("=== ПРОВЕРКА ПУСТОГО ИЗБРАННОГО ===")
-
         try:
             element = self.driver.find_element(*self.TITLE)
-            print(f"✅ Элемент заголовка найден")
-            print(f"Текст элемента: '{element.text}'")
-            print(f"Элемент отображается: {element.is_displayed()}")
-            print(f"Содержит нужный текст: {'Список избранных товаров пуст' in element.text}")
-
-            result = element.is_displayed() and "Список избранных товаров пуст" in element.text
-            print(f"Результат проверки: {result}")
-            return result
-
-        except Exception as e:
-            print(f"❌ Элемент не найден: {e}")
+            return element.is_displayed() and "Список избранных товаров пуст" in element.text
+        except Exception:
             return False
 
     def wait_for_empty_favorites_message(self, timeout=10):
