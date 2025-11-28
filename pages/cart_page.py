@@ -1,6 +1,9 @@
 from selenium.webdriver.common.by import By
 from pages.bace_page import BasePage
 import allure
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
 
 
 class CartPage(BasePage):
@@ -13,7 +16,8 @@ class CartPage(BasePage):
     COUNTER_VALUE = (By.XPATH, "//input[@class='counter__value']") # счётчик определённого товара
     COUNTER_MINUS = (By.XPATH, "//span[@class='counter__minus']") # уменьшить число товаров
     COUNTER_PLUS = (By.XPATH, "//span[@class='counter__plus']") # увеличить число товаров
-    GO_TO_PURCHASE_BUTTON = (By.XPATH, "//a[contains(@class,'go2order')]")
+    GO_TO_PURCHASE_BUTTON = (By.XPATH, "//a[contains(@class,'go2order')]") # кнопка "Перейти к покупке"
+    CART_CELL_SIZE = (By.XPATH, "./following::div[@class='cart__cell-size']") # ячейка размера товара
 
 
     @allure.step("Открыть страницу корзины товаров")
@@ -69,4 +73,21 @@ class CartPage(BasePage):
     def go_to_purchase(self):
         """Нажать на кнопку 'Перейти к покупке'"""
         self.driver.find_element(*self.GO_TO_PURCHASE_BUTTON).click()
+
+    @allure.step("Проверяем фактический размер товара в корзине")
+    def size_check(self, product_name, expected_size):
+        """Проверяет размер товара в корзине"""
+        size_element = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.XPATH,
+                                            f"//div[@class='info__title']/a[contains(text(),'{product_name}')]"
+                                            f"/following::div[@class='cart__cell-size']"))
+        )
+
+        actual_size = size_element.text
+
+        assert actual_size == expected_size, (
+            f"Неверный размер для товара '{product_name}'. "
+            f"Ожидался: '{expected_size}', Фактический: '{actual_size}'"
+        )
+
 

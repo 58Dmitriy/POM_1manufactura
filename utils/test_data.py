@@ -25,11 +25,11 @@ class AddressData:
 
 # Тестовые данные для покупателя в e2e тесте: test_placing_an_order
 TEST_BUYER = BuyerInfo(
-    name="test",
-    last_name="test",
-    surname_name="test",
+    name="Иван",
+    last_name="Иванов",
+    surname_name="Иванович",
     phone="+79999999999",
-    email="test10@mail.ru"
+    email="ivanivanov@mail.ru"
 )
 
 # Тестовые данные для пароля в test_profile тесте: test_success_change_data
@@ -41,7 +41,7 @@ ABOUT_YOURSELF = {
     "month": "11", # месяц указывать в формате от 01 до 12
     "year": "1970",
     "phone": "+71234567788",
-    "email": "test20@mail.ru",
+    "email": "test21@mail.ru",
 }
 
 # Тестовые данные для пароля в test_profile тесте: test_success_change_password
