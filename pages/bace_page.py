@@ -3,6 +3,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import allure
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
 
 class BasePage(object):
@@ -24,9 +25,10 @@ class BasePage(object):
 
     @allure.step("Ввод текста '{text}'")
     def type(self, locator, text):
-        elem = self.wait.until(EC.visibility_of_element_located(locator))
-        elem.clear()
-        elem.send_keys(text)
+        """Простой ввод текста"""
+        element = self.wait.until(EC.element_to_be_clickable(locator))
+        element.clear()
+        element.send_keys(text)
 
     @allure.step("Получить текст элемента")
     def get_text(self, locator):
@@ -103,9 +105,7 @@ class BasePage(object):
 
         if element:
             add_button = element.find_element(*self.ADD_TO_CART_BUTTON)
-            self.scroll_to_element(add_button)
-            WebDriverWait(self.driver, 5).until(EC.element_to_be_clickable(add_button))
-            add_button.click()
+            self.driver.execute_script("arguments[0].click();", add_button)
             return True
         return False
 
