@@ -1,6 +1,4 @@
 import pytest
-
-import pages
 from pages.authorization import Authorization
 from pages.profile_page import Profile
 from pages.address_page import Address
