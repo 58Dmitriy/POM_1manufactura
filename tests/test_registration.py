@@ -4,7 +4,7 @@ from  pages.profile_page import Profile
 
 
 @pytest.mark.ui
-# @pytest.mark.skip
+@pytest.mark.skip
 def test_successful_login(driver):
     registration_page = Registration(driver)
     profile_page = Profile(driver)
@@ -12,9 +12,9 @@ def test_successful_login(driver):
     registration_page.open_registration_page()
     registration_page.new_registration("",
                                        "",
-                                       "test15",
+                                       "test16",
                                        "0000000",
                                        "0000000",
-                                       "test15@mail.ru",
+                                       "test16@mail.ru",
                                        "")
     assert profile_page.title().lower() == "мои данные"

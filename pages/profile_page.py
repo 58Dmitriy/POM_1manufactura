@@ -1,10 +1,8 @@
 from selenium.webdriver.common.by import By
 from pages.bace_page import BasePage
 import allure
-from selenium.webdriver.support.ui import Select
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from utils.test_data import *
+from allure_commons.types import AttachmentType
 
 class Profile(BasePage):
     """Страница профиля"""
@@ -19,7 +17,7 @@ class Profile(BasePage):
     LAST_NAME = (By.XPATH, "//input[@name='LAST_NAME']") # поле ввода "Фамилия"
     NAME = (By.XPATH, "//input[@name='NAME']") # поле ввода "Имя"
     SECOND_NAME = (By.XPATH, "//input[@name='SECOND_NAME']")  # поле ввода "Отчёство"
-    ## Дата рождения
+    ## Дата рождения (не реализовано/отложено)
     # DAY = (By.XPATH, "//input[@id='day-label']")
     # MONTH = (By.XPATH, "//option[@value='03']")
     # YEAR = (By.XPATH, "//input[@id='year-label']")
@@ -36,17 +34,25 @@ class Profile(BasePage):
     NEW_PASSWORD_CONFIRM = (By.XPATH, "//input[@name='NEW_PASSWORD_CONFIRM']") # поле ввода "Повторите новый пароль"
 
 
-    @allure.step("Проверить наличие заголовка на странице")
+    @allure.step("Проверяем наличие заголовка на странице")
     def title(self):
-        return self.get_text(self.TITLE)
+        result = self.get_text(self.TITLE)
+        allure.attach(result, name="Заголовок", attachment_type=AttachmentType.TEXT)
+        return result
 
-    @allure.step("Указать изменённые данные в личном кабинете")
+
+    @allure.step("Вводим изменяемые данные в личном кабинете")
     def enter_tell_about_yourself(self, info: dict):
         self.type(self.LAST_NAME, info["last_name"])
+        allure.attach(info["last_name"], name="👤 Фамилия", attachment_type=AttachmentType.TEXT)
         self.type(self.NAME, info["name"])
+        allure.attach(info["name"], name="👤 Имя", attachment_type=AttachmentType.TEXT)
         self.type(self.SECOND_NAME, info["second_name"])
+        allure.attach(info["second_name"], name="👤 Отчество", attachment_type=AttachmentType.TEXT)
         self.type(self.PERSONAL_PHONE, info["phone"])
+        allure.attach(info["phone"], name="📞 Телефон", attachment_type=AttachmentType.TEXT)
         self.type(self.EMAIL, info["email"])
+        allure.attach(info["email"], name="📧 Email", attachment_type=AttachmentType.TEXT)
 
     @allure.step("Выбираем пол")
     def select_gender(self, gender: str):
@@ -54,29 +60,41 @@ class Profile(BasePage):
 
         if gender in ['man']:
             self.click(self.GENDER_MAN)
+            allure.attach("👨", name="Пол выбран", attachment_type=AttachmentType.TEXT)
         elif gender in ['woman']:
             self.click(self.GENDER_WOMAN)
+            allure.attach("👩", name="Пол выбран", attachment_type=AttachmentType.TEXT)
         else:
+            allure.attach("❌", name="Ошибка выбора", attachment_type=AttachmentType.TEXT)
             raise ValueError(f"Неизвестный пол: '{gender}'. Используй 'man' или 'woman'")
 
-    @allure.step("Нажать кнопку 'Сохранить изменения'")
+    @allure.step("Нажимаем кнопку 'Сохранить изменения'")
     def save_information(self):
         self.driver.find_element(*self.SAVE_BUTTON).click()
+        allure.attach("💾", name="Изменения сохранены", attachment_type=AttachmentType.TEXT)
 
     @allure.step("Проверяем сообщение об успешном сохранении изменений ")
     def save_info(self):
-        return self.get_text(self.SAVE_INFO)
+        result = self.get_text(self.SAVE_INFO)
+        allure.attach(result, name="✅ Сообщение", attachment_type=AttachmentType.TEXT)
+        return result
 
-    @allure.step("Указываем текущий, новый пароль и подтверждаем новый пароль")
+    @allure.step("Изменение пароля пользователя")
     def change_password(self, password: Password):
         self.type(self.CURRENT_PASSWORD, password.current_password)
+        allure.attach("введен", name="Текущий пароль", attachment_type=AttachmentType.TEXT)
         self.type(self.NEW_PASSWORD, password.new_password)
+        allure.attach("введен", name="Новый пароль", attachment_type=AttachmentType.TEXT)
         self.type(self.NEW_PASSWORD_CONFIRM, password.new_password_confirm)
+        allure.attach("введено", name="Подтверждение нового пароля", attachment_type=AttachmentType.TEXT)
 
     @allure.step("Проверяем сообщение об ошибке")
     def error_text(self):
-        return self.get_text(self.ERROR_TEXT)
+        result = self.get_text(self.ERROR_TEXT)
+        allure.attach(result, name="❌ Ошибка", attachment_type=AttachmentType.TEXT)
+        return result
 
-    @allure.step("Нажать кнопку 'Адресная книга'")
+    @allure.step("Нажимаем кнопку 'Адресная книга'")
     def go_to_address_book(self):
         self.driver.find_element(*self.ADDRESS_BOOK_BUTTON).click()
+        allure.attach("📒", name="Адресная книга открыта", attachment_type=AttachmentType.TEXT)

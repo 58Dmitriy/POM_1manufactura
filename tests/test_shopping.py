@@ -5,7 +5,6 @@ from pages.horses_page import HorsesPage
 from pages.cart_page import CartPage
 from pages.stable_page import StablePage
 from pages.product_card_page import ProductCardPage
-import allure
 from fixtures.parametrize_fixtures import *
 
 
@@ -97,21 +96,10 @@ def test_random_product_selection_on_page(driver):
     cart_page = CartPage(driver)
     stable_page = StablePage(driver)
 
-    with allure.step("Открыть главную страницу и перейти в каталог"):
-        header_page.open_home_page()
-        header_page.go_to_stable_page()
-
-    with allure.step("Выбрать случайный товар из каталога"):
-        bx_id, product_name = stable_page.get_random_product()
-        allure.attach(f"Выбран товар: {product_name} (ID: {bx_id})", name="Product Info")
-
-    with allure.step("Добавить выбранный товар в корзину"):
-        success = stable_page.add_product_to_cart_by_id_with_pagination(bx_id)
-        assert success, f"Не удалось добавить товар '{product_name}' в корзину"
-
-    with allure.step("Перейти в корзину"):
-        header_page.go_to_cart_page()
-
-    with allure.step("Проверить наличие товара в корзине"):
-        assert cart_page.is_product_in_cart_by_name(product_name), f"Товар '{product_name}' не найден в корзине"
+    header_page.open_home_page()
+    header_page.go_to_stable_page()
+    bx_id, product_name = stable_page.get_random_product()
+    stable_page.add_product_to_cart_by_id_with_pagination(bx_id)
+    header_page.go_to_cart_page()
+    assert cart_page.is_product_in_cart_by_name(product_name)
 

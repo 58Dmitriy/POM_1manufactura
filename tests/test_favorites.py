@@ -5,6 +5,8 @@ from pages.horses_page import HorsesPage
 from pages.favorites_page import FavoritesPage
 from fixtures.parametrize_fixtures import *
 from pages.product_card_page import ProductCardPage
+import allure
+from allure_commons.types import AttachmentType
 
 @pytest.mark.ui
 @pytest.mark.smoke
@@ -20,11 +22,18 @@ def test_add_in_favorites_from_catalog(driver):
 
     # Проверяем ВСЕ товары из FAVORITES_PRODUCTS
     for bx_id in FAVORITES_PRODUCTS:
-        assert favorites_page.is_product_in_favorites_by_bx_id(bx_id)
+        with allure.step(f"Проверяем наличие товара {bx_id} в избранном"):
+            assert favorites_page.is_product_in_favorites_by_bx_id(bx_id)
+            allure.attach("✅", name="Товар присутствует", attachment_type=AttachmentType.TEXT)
 
     # Удаляем ВСЕ товары из FAVORITES_PRODUCTS
     for bx_id in FAVORITES_PRODUCTS:
-        favorites_page.remove_from_favorites(bx_id)
+        with allure.step(f"Удаляем товар {bx_id} из избранного"):
+            favorites_page.remove_from_favorites(bx_id)
+            allure.attach("🗑️", name="Товар удален", attachment_type=AttachmentType.TEXT)
+
+    allure.attach(f"✅ Обработано товаров: {len(FAVORITES_PRODUCTS)}",
+                  name="Итог операции", attachment_type=AttachmentType.TEXT)
 
 
 @halter_product_parametrize

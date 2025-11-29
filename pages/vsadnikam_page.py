@@ -1,8 +1,7 @@
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
 from pages.bace_page import BasePage
 import allure
+from allure_commons.types import AttachmentType
 
 
 class VsadnikamPage(BasePage):
@@ -12,7 +11,9 @@ class VsadnikamPage(BasePage):
 
     @allure.step("Проверяем наличие текста на странице")
     def title(self):
-        return self.get_text(self.TITLE)
+        result = self.get_text(self.TITLE)
+        allure.attach(result, name="📋 Заголовок", attachment_type=AttachmentType.TEXT)
+        return result
 
 
 
