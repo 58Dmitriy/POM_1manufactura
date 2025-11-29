@@ -4,6 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from pages.bace_page import BasePage
 import allure
+from allure_commons.types import AttachmentType
 
 
 class OrderPage(BasePage):
@@ -15,11 +16,13 @@ class OrderPage(BasePage):
 
     @allure.step("Проверяем наличие текста на странице")
     def title(self, timeout=10):
-        """Ожидает и возвращает текст заголовка"""
         try:
             element = WebDriverWait(self.driver, timeout).until(
                 EC.visibility_of_element_located(self.TITLE)
             )
-            return element.text
+            result = element.text
+            allure.attach(result, name="Текст заголовка", attachment_type=AttachmentType.TEXT)
+            return result
         except TimeoutException:
+            allure.attach(f"❌ Не появился за {timeout}сек", name="Текст заголовка", attachment_type=AttachmentType.TEXT)
             raise Exception(f"Заголовок не появился за {timeout} секунд")

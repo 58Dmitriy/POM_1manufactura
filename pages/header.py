@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 from pages.bace_page import BasePage
 import allure
+from allure_commons.types import AttachmentType
 
 
 class HeaderPage(BasePage):
@@ -37,42 +38,55 @@ class HeaderPage(BasePage):
     NEW = (By.XPATH, "//a[@class='nav-main__link' and text()='Новинки']") # Раздел "Новинки"
     BRANDS = (By.XPATH, "//a[@class='nav-main__link' and text()='Бренды']") # Раздел "Бренды"
 
-    @allure.step("Открыть главную страницу")
+    @allure.step("Открываем главную страницу")
     def open_home_page(self):
         self.open("https://1manufactura.ru/")
+        allure.attach("✅", name="Главная страница открыта", attachment_type=AttachmentType.TEXT)
 
+    @allure.step("Переходим в раздел 'Избранное'")
     def go_to_favorites_page(self):
-        """Перейти в избранное"""
         self.driver.find_element(*self.FAVORITES_BUTTON).click()
+        allure.attach("✅", name="Раздел открыт", attachment_type=AttachmentType.TEXT)
 
+    @allure.step("Переходим в корзину товаров")
     def go_to_cart_page(self):
-        """Перейти в корзину"""
         self.driver.find_element(*self.CART_BUTTON).click()
+        allure.attach("✅", name="Корзина открыта", attachment_type=AttachmentType.TEXT)
 
+    @allure.step("Переходим в каталог 'Всадникам'")
     def go_to_vsadnikam_page(self):
-        """Перейти в раздел 'Всадникам'"""
         self.driver.find_element(*self.HORSEMEN).click()
+        allure.attach("✅", name="Каталог открыт", attachment_type=AttachmentType.TEXT)
 
+    @allure.step("Переходим в каталог 'Лошадям'")
     def go_to_horses_page(self):
-        """Перейти в раздел 'Лошадям'"""
         self.driver.find_element(*self.HORSES).click()
+        allure.attach("✅", name="Каталог открыт", attachment_type=AttachmentType.TEXT)
 
+    @allure.step("Переходим в каталог 'Конюшня'")
     def go_to_stable_page(self):
-        """Перейти в раздел 'Лошадям'"""
         self.driver.find_element(*self.STABLE).click()
+        allure.attach("✅", name="Каталог открыт", attachment_type=AttachmentType.TEXT)
 
+    @allure.step("Проверяем отображается ли счётчик корзины")
     def cart_counter_is_displayed(self):
-        """Проверяет, отображается ли счетчик корзины"""
         try:
             counter = self.driver.find_element(*self.CART_COUNTER)
-            return counter.is_displayed()
+            result = counter.is_displayed()
+            status = "✅ Отображается" if result else "❌ Не отображается"
+            allure.attach(status, name="Результат проверки", attachment_type=AttachmentType.TEXT)
+            return result
         except:
+            allure.attach("❌ Элемент не найден", name="Результат проверки", attachment_type=AttachmentType.TEXT)
             return False
 
-    @allure.step("Проверить чему равен счётчик корзины")
+    @allure.step("Проверяем чему равен счётчик корзины")
     def cart_counter(self):
-        """Возвращает количество товаров или 0 если счетчика нет"""
         if self.cart_counter_is_displayed():
             count_text = self.get_text(self.CART_COUNTER)
-            return int(count_text)
+            result = int(count_text)
+            allure.attach(str(result), name="Значение счетчика", attachment_type=AttachmentType.TEXT)
+            return result
+
+        allure.attach("0", name="Значение счетчика", attachment_type=AttachmentType.TEXT)
         return 0
