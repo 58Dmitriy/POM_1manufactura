@@ -3,13 +3,19 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import allure
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.common.action_chains import ActionChains
+import random
+from typing import List, Dict, Tuple
 
 class BasePage(object):
     def __init__(self, driver):
         self.driver: WebDriver = driver
         self.wait: WebDriverWait = WebDriverWait(self.driver, 10)
+
+    # Селекторы для выбора рандомного товара
+    PRODUCT_ITEM = (By.CSS_SELECTOR, "div.catalog__item")
+    PRODUCT_ID = (By.CSS_SELECTOR, "div.catalog__item[id^='bx_']")
+    PRODUCT_NAME = (By.CSS_SELECTOR, "div.product__description")
+    DATA_ID = "data-id"  # Атрибут с ID товара
 
     @allure.step("Скролл до элемента")
     def scroll_to_element(self, element):
@@ -130,4 +136,56 @@ class BasePage(object):
         for bx_id in products_list:
             self.add_in_favorites(bx_id, max_pages)
 
+    @allure.step("Собираем список всех товаров на странице")
+    def get_products_list(self) -> List[Dict[str, str]]:
+        """Собирает список всех товаров на странице
+        Возвращает:
+            List словарей с id и названием товаров"""
+        products = []
 
+        try:
+            # Ждем появления товаров на странице
+            WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located(self.PRODUCT_ITEM)
+            )
+
+            # Находим все элементы товаров
+            product_elements = self.driver.find_elements(*self.PRODUCT_ITEM)
+
+            for product_element in product_elements:
+                try:
+                    # Извлекаем ID из атрибута id
+                    product_id = product_element.get_attribute("id")
+
+                    # Извлекаем название товара
+                    name_element = product_element.find_element(*self.PRODUCT_NAME)
+                    product_name = name_element.text.strip()
+
+                    # Добавляем в список, если все данные есть
+                    if product_id and product_name:
+                        products.append({
+                            'bx_id': product_id,
+                            'product_name': product_name
+                        })
+
+                except Exception as e:
+                    print(f"Ошибка при извлечении данных товара: {e}")
+                    continue
+
+        except Exception as e:
+            print(f"Ошибка при поиске товаров: {e}")
+
+        return products
+
+    @allure.step("Выбираем случайный товар из списка")
+    def get_random_product(self) -> Tuple[str, str]:
+        """Выбирает случайный товар из списка
+        Возвращает:
+            Кортеж (id, название) случайного товара"""
+        products = self.get_products_list()
+
+        if not products:
+            raise ValueError("На странице не найдено товаров")
+
+        random_product = random.choice(products)
+        return random_product['bx_id'], random_product['product_name']
