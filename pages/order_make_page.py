@@ -55,12 +55,13 @@ class OrderMakePage(BasePage):
         self.driver.execute_script("arguments[0].click();", radiobutton)
 
     @allure.step("Заполняем данные о покупателе")
-    def enter_information_about_the_buyer(self, buyer_info: BuyerInfo):
-        self.type(self.LASTNAME, buyer_info.last_name)
-        self.type(self.NAME, buyer_info.name)
-        self.type(self.SURNAME, buyer_info.surname_name)
-        self.type(self.TELEPHONE, buyer_info.phone)
-        self.type(self.EMAIL, buyer_info.email)
+    def enter_information_about_the_buyer(self, buyer_info):
+        """Заполняет поля формы"""
+        self.driver.execute_script(f"document.getElementById('soa-property-65').value = '{buyer_info.last_name}'")
+        self.driver.execute_script(f"document.getElementById('soa-property-64').value = '{buyer_info.name}'")
+        self.driver.execute_script(f"document.getElementById('soa-property-66').value = '{buyer_info.surname_name}'")
+        self.driver.execute_script(f"document.getElementById('soa-property-4').value = '{buyer_info.phone}'")
+        self.driver.execute_script(f"document.getElementById('soa-property-5').value = '{buyer_info.email}'")
 
     @allure.step("Проверяем наличие товара")
     def product_check(self, product_name):

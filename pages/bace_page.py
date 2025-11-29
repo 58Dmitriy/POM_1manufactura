@@ -6,6 +6,7 @@ import allure
 import random
 from typing import List, Dict, Tuple
 
+
 class BasePage(object):
     def __init__(self, driver):
         self.driver: WebDriver = driver

@@ -2,8 +2,8 @@ from dataclasses import dataclass
 
 @dataclass
 class BuyerInfo:
-    name: str
     last_name: str
+    name: str
     surname_name: str
     phone: str
     email: str
@@ -25,8 +25,8 @@ class AddressData:
 
 # Тестовые данные для покупателя в e2e тесте: test_placing_an_order
 TEST_BUYER = BuyerInfo(
-    name="Иван",
     last_name="Иванов",
+    name="Иван",
     surname_name="Иванович",
     phone="+79999999999",
     email="ivanivanov@mail.ru"

@@ -9,13 +9,11 @@ from pages.order_page import OrderPage
 from fixtures.parametrize_fixtures import *
 from utils.auth_helper import *
 from utils.test_data import *
-import time
 
 
-@stable_product_parametrize
 @pytest.mark.ui
 @pytest.mark.smoke
-def test_placing_an_order(driver, bx_id, product_name):
+def test_placing_an_order(driver):
     authorization_page = Authorization(driver)
     login, password = get_auth_credentials()
     profile_page = Profile(driver)
@@ -31,6 +29,7 @@ def test_placing_an_order(driver, bx_id, product_name):
     header_page.open_home_page()
     header_page.go_to_stable_page()
     assert stable_page.title().lower() == "товары для конюшни"
+    bx_id, product_name = stable_page.get_random_product()
     stable_page.add_product_to_cart_by_id_with_pagination(bx_id)
     header_page.go_to_cart_page()
     cart_page.is_product_in_cart_by_name(product_name)
