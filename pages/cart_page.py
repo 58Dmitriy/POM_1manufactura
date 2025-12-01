@@ -24,6 +24,11 @@ class CartPage(BasePage):
         self.open("https://1manufactura.ru/personal/cart/")
         allure.attach("✅", name="Корзина открыта", attachment_type=AttachmentType.TEXT)
 
+    @allure.step("Проверить, что открыта страница корзины")
+    def verify_cart_page_opened(self):
+        element = self.driver.find_element(*self.TITLE_CONTENTS_IN_THE_BASKET)
+        assert element.is_displayed(), "Страница корзины не открыта"
+
     @allure.step("Проверяем что товар с указанным названием в корзине")
     def is_product_in_cart_by_name(self, expected_product_name):
         cart_items = self.driver.find_elements(*self.CART_ROW)
@@ -35,6 +40,11 @@ class CartPage(BasePage):
 
         allure.attach("❌", name="Товар не найден", attachment_type=AttachmentType.TEXT)
         return False
+
+    @allure.step("Проверить, что товар '{expected_product_name}' добавлен в корзину")
+    def verify_product_in_cart(self, expected_product_name):
+        is_in_cart = self.is_product_in_cart_by_name(expected_product_name)
+        assert is_in_cart, f"Товар '{expected_product_name}' не найден в корзине"
 
     @allure.step("Проверяем отображается ли счетчик товара")
     def counter_value_is_displayed(self):
@@ -67,6 +77,12 @@ class CartPage(BasePage):
 
         allure.attach("1", name="Значение счетчика (не отображается)", attachment_type=AttachmentType.TEXT)
         return 1  # значение по умолчанию если счетчик не отображается
+
+    @allure.step("Проверить, что значение счетчика равно {expected_value}")
+    def verify_counter_value(self, expected_value):
+        actual_value = self.counter_value()
+        assert actual_value == expected_value, \
+            f"Значение счетчика '{actual_value}' не соответствует ожидаемому '{expected_value}'"
 
     @allure.step("Указываем количество товаров: {quantity}")
     def enter_quantity_of_goods(self, quantity):

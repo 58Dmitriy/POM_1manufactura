@@ -22,6 +22,14 @@ class ProductCardPage(BasePage):
         allure.attach(status, name="Результат поиска", attachment_type=AttachmentType.TEXT)
         return result
 
+    @allure.step("Проверить, что название товара '{text}' отображается на странице")
+    def verify_text_present(self, text):
+        """Проверяет наличие текста на странице и вызывает assert"""
+        result = text in self.driver.page_source
+        status = "✅ Найден" if result else "❌ Не найден"
+        allure.attach(status, name="Результат поиска", attachment_type=AttachmentType.TEXT)
+        assert result, f"Текст '{text}' не найден на странице. Текущий URL: {self.driver.current_url}"
+
     @allure.step("Добавляем товар в 'Избранное'")
     def add_in_favorites(self):
         self.driver.find_element(*self.FAVORITES_BUTTON).click()
@@ -54,3 +62,4 @@ class ProductCardPage(BasePage):
         allure.attach("✅", name="Размер выбран", attachment_type=AttachmentType.TEXT)
 
         return True
+

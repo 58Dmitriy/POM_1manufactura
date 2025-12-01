@@ -44,6 +44,13 @@ class OrderMakePage(BasePage):
             allure.attach(f"❌ Не появился за {timeout}сек", name="Текст заголовка", attachment_type=AttachmentType.TEXT)
             raise Exception(f"Заголовок не появился за {timeout} секунд")
 
+    @allure.step("Проверить, что открыта страница 'Тип покупателя и регион доставки'")
+    def verify_order_make_page_opened(self):
+        actual_title = self.title().lower()
+        expected_title = "тип покупателя и регион доставки"
+        assert actual_title == expected_title, \
+            f"Заголовок страницы '{actual_title}' не соответствует ожидаемому '{expected_title}'"
+
     @allure.step("Нажимаем радиокнопку 'Физ.лицо'")
     def individual_radiobutton(self):
         radiobutton = self.driver.find_element(*self.INDIVIDUAL_RADIOBUTTON)

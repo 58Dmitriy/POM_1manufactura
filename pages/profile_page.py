@@ -40,6 +40,13 @@ class Profile(BasePage):
         allure.attach(result, name="Заголовок", attachment_type=AttachmentType.TEXT)
         return result
 
+    @allure.step("Проверить, что открыта страница 'Мои данные'")
+    def verify_profile_page_opened(self):
+        actual_title = self.title().lower()
+        expected_title = "мои данные"
+        assert actual_title == expected_title\
+            , f"Заголовок страницы '{actual_title}' не соответствует ожидаемому '{expected_title}'"
+
 
     @allure.step("Вводим изменяемые данные в личном кабинете")
     def enter_tell_about_yourself(self, info: dict):
@@ -79,6 +86,13 @@ class Profile(BasePage):
         allure.attach(result, name="✅ Сообщение", attachment_type=AttachmentType.TEXT)
         return result
 
+    @allure.step("Проверить, что изменения успешно сохранены")
+    def verify_changes_saved(self):
+        actual_message = self.save_info().lower()
+        expected_message = "изменения сохранены"
+        assert actual_message == expected_message, \
+            f"Сообщение '{actual_message}' не соответствует ожидаемому '{expected_message}'"
+
     @allure.step("Изменение пароля пользователя")
     def change_password(self, password: Password):
         self.type(self.CURRENT_PASSWORD, password.current_password)
@@ -93,6 +107,20 @@ class Profile(BasePage):
         result = self.get_text(self.ERROR_TEXT)
         allure.attach(result, name="❌ Ошибка", attachment_type=AttachmentType.TEXT)
         return result
+
+    @allure.step("Проверить сообщение об ошибке подтверждения пароля")
+    def verify_password_confirmation_error(self):
+        actual_error = self.error_text().lower()
+        expected_error = "неверное подтверждение пароля."
+        assert actual_error == expected_error, \
+            f"Сообщение об ошибке '{actual_error}' не соответствует ожидаемому '{expected_error}'"
+
+    @allure.step("Проверить сообщение об ошибке текущего пароля")
+    def verify_current_password_error(self):
+        actual_error = self.error_text().lower()
+        expected_error = "неверный текущий пароль."
+        assert actual_error == expected_error, \
+            f"Сообщение об ошибке '{actual_error}' не соответствует ожидаемому '{expected_error}'"
 
     @allure.step("Нажимаем кнопку 'Адресная книга'")
     def go_to_address_book(self):

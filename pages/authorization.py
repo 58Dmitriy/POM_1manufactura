@@ -30,3 +30,10 @@ class Authorization(BasePage):
         result = self.get_text(self.ERROR_MESSAGE)
         allure.attach(result, name="Ошибка", attachment_type=AttachmentType.TEXT)
         return result
+
+    @allure.step("Проверить сообщение об ошибке авторизации")
+    def verify_invalid_login_error(self):
+        actual_error = self.error_message()
+        expected_error = "Неверный логин или пароль."
+        assert actual_error == expected_error, \
+            f"Сообщение об ошибке '{actual_error}' не соответствует ожидаемому '{expected_error}'"

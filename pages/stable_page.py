@@ -14,3 +14,10 @@ class StablePage(BasePage):
         result = self.get_text(self.TITLE)
         allure.attach(result, name="📄 Текст страницы", attachment_type=AttachmentType.TEXT)
         return result
+
+    @allure.step("Проверить, что открыта страница 'Товары для конюшни'")
+    def verify_stable_page_opened(self):
+        actual_title = self.title().lower()
+        expected_title = "товары для конюшни"
+        assert actual_title == expected_title, \
+            f"Заголовок страницы '{actual_title}' не соответствует ожидаемому '{expected_title}'"

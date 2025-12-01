@@ -22,6 +22,13 @@ class Address(BasePage):
         allure.attach(result, name="Заголовок", attachment_type=AttachmentType.TEXT)
         return result
 
+    @allure.step("Проверить, что открыта страница 'Адресная книга'")
+    def verify_address_book_opened(self):
+        actual_title = self.title().lower()
+        expected_title = "адресная книга"
+        assert actual_title == expected_title\
+            , f"Заголовок страницы '{actual_title}' не соответствует ожидаемому '{expected_title}'"
+
     @allure.step("Нажимаем кнопку 'Добавить' адрес")
     def add_new_address(self):
         self.driver.find_element(*self.ADD_ADDRESS_BUTTON).click()

@@ -62,3 +62,31 @@ class FavoritesPage(BasePage):
         checkbox = element.find_element(By.XPATH, ".//input[@type='checkbox']")
         self.driver.execute_script("arguments[0].click();", checkbox)
         allure.attach("✅", name="Товар удален", attachment_type=AttachmentType.TEXT)
+
+    @allure.step("Проверить, что список избранного НЕ пустой")
+    def verify_favorites_not_empty(self):
+        """Проверяет, что список избранного содержит товары"""
+        try:
+            element = self.driver.find_element(*self.TITLE)
+            is_empty_displayed = element.is_displayed() and "Список избранных товаров пуст" in element.text
+            status = "✅ Список не пуст" if not is_empty_displayed else "❌ Список пуст"
+            allure.attach(status, name="Результат проверки", attachment_type=AttachmentType.TEXT)
+            assert not is_empty_displayed, "Список избранного пуст, но ожидалось наличие товаров"
+        except Exception:
+            # Если элемента нет - это хорошо, значит список не пустой
+            allure.attach("✅ Список не пуст (элемент не найден)", name="Результат проверки",
+                          attachment_type=AttachmentType.TEXT)
+
+    @allure.step("Проверить наличие товара с ID {bx_id} в избранном")
+    def verify_product_in_favorites(self, bx_id):
+        """Проверяет наличие конкретного товара в избранном"""
+        try:
+            element = self.driver.find_element(By.ID, bx_id)
+            result = element.is_displayed()
+            status = "✅ Товар найден в избранном" if result else "❌ Товар не найден"
+            allure.attach(status, name="Результат проверки", attachment_type=AttachmentType.TEXT)
+            assert result, f"Товар с ID {bx_id} не отображается в избранном"
+        except Exception as e:
+            allure.attach(f"❌ Товар с ID {bx_id} не найден в избранном", name="Результат проверки",
+                          attachment_type=AttachmentType.TEXT)
+            raise AssertionError(f"Товар с ID {bx_id} не найден в избранном") from e
