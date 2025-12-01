@@ -17,7 +17,6 @@ on: # когда / в какой ситуации запускать
 jobs:
   tests: # название jobы 'tests'
     runs-on: windows-latest # в виртуальную машину установить указанную ОС последней версии
-    # runs-on: [self-hosted, windows, x64, windows-10] # устанавливаем windows-10
 
     steps: # шаги для запуска тестов
       - name: Checkout repository
@@ -48,47 +47,6 @@ jobs:
           if (Test-Path $chromePath) {
             & $chromePath --version
           }
-
-      # - name: Setup Chrome for Testing with WebDriver
-      #   shell: pwsh
-      #   run: |
-      #     $CHROME_VERSION = "142.0.7444.60"
-      #     $CHROME_DIR = "$env:RUNNER_TEMP\chrome-for-testing"
-
-      #     # Создаем директории
-      #     New-Item -ItemType Directory -Force -Path "$CHROME_DIR"
-      #     New-Item -ItemType Directory -Force -Path "$CHROME_DIR\chrome"
-      #     New-Item -ItemType Directory -Force -Path "$CHROME_DIR\driver"
-
-      #     # Скачиваем Chrome for Testing
-      #     $chromeUrl = "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/win64/chrome-win64.zip"
-      #     $chromeZip = "$CHROME_DIR\chrome.zip"
-
-      #     Write-Host "Downloading Chrome for Testing..."
-      #     Invoke-WebRequest -Uri $chromeUrl -OutFile $chromeZip -TimeoutSec 300
-
-      #     # Скачиваем ChromeDriver
-      #     $driverUrl = "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/win64/chromedriver-win64.zip"
-      #     $driverZip = "$CHROME_DIR\chromedriver.zip"
-
-      #     Write-Host "Downloading ChromeDriver..."
-      #     Invoke-WebRequest -Uri $driverUrl -OutFile $driverZip -TimeoutSec 300
-
-      #     # Распаковываем
-      #     Expand-Archive -Path $chromeZip -DestinationPath "$CHROME_DIR\chrome" -Force
-      #     Expand-Archive -Path $driverZip -DestinationPath "$CHROME_DIR\driver" -Force
-
-      #     # Добавляем в PATH
-      #     $chromePath = "$CHROME_DIR\chrome\chrome-win64"
-      #     $driverPath = "$CHROME_DIR\driver\chromedriver-win64"
-
-      #     echo "$chromePath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-      #     echo "$driverPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
-
-      #     # Проверяем
-      #     Write-Host "=== Проверка установки ==="
-      #     & "$chromePath\chrome.exe" --version
-      #     & "$driverPath\chromedriver.exe" --version
 
       - name: install dependencies # устанавливаем зависимости
         run: pip install -r requirements.txt
