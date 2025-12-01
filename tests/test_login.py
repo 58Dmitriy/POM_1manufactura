@@ -53,10 +53,9 @@ def test_login_invalid_login(driver, creds):
 def test_successful_login(driver, creds):
     authorization_page = Authorization(driver)
     profile_page = Profile(driver)
-    login, password = get_auth_credentials()
 
     authorization_page.open_login_page()
     user_login, password = creds
-    authorization_page.login(login, password)
+    authorization_page.login(user_login, password)
     profile_page.verify_profile_page_opened()
 
