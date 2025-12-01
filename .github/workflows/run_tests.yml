@@ -26,7 +26,7 @@ jobs:
       - name: setup Python # устанавливаем Python
         uses: actions/setup-python@v5
         with: # дополнительная настройка 'with'
-          python-version: "3.13" # указываем нужную версию python
+          python-version: "3.11" # указываем нужную версию python
 #      - name: Install Chrome
         # 'run' когда сами указываем команду которую необходимо выполнить
 #        run: sudo apt-get install google-chrome-stable # установить последнюю стабильную версию google-chrome
