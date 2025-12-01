@@ -41,7 +41,7 @@ ABOUT_YOURSELF = {
     "month": "11", # месяц указывать в формате от 01 до 12
     "year": "1970",
     "phone": "+71234567788",
-    "email": "test21@mail.ru",
+    "email": "test211@mail.ru",
 }
 
 # Тестовые данные для пароля в test_profile тесте: test_success_change_password
@@ -53,8 +53,8 @@ CHANGE_PASSWORD = Password(
 
 # Тестовые данные для пароля в test_profile тесте: test_incorrect_password_confirmation
 INCORRECT_PASSWORD_CONFIRMATION =Password(
-current_password = "0000000",
-    new_password = "1111111",
+current_password = "1111111",
+    new_password = "2222222",
     new_password_confirm = "123456789"
 )
 

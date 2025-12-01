@@ -2,10 +2,13 @@ import pytest
 from pages.authorization import Authorization
 from pages.profile_page import Profile
 from utils.auth_helper import *
+import allure
 
 
+@allure.feature("Authentication")
 @pytest.mark.ui
 @pytest.mark.smoke
+@allure.title("Успешная авторизация")
 def test_successful_login(driver):
     authorization_page = Authorization(driver)
     profile_page = Profile(driver)
@@ -13,7 +16,7 @@ def test_successful_login(driver):
 
     authorization_page.open_login_page()
     authorization_page.login(login, password)
-    assert profile_page.title().lower() == "мои данные"
+    profile_page.verify_profile_page_opened()
 
 @pytest.mark.parametrize(
     "creds",
@@ -23,12 +26,15 @@ def test_successful_login(driver):
     ]
 )
 
+@allure.feature("Authentication")
+@pytest.mark.no_authorization
 @pytest.mark.ui
 @pytest.mark.smoke
+@allure.title("Не успешная авторизация")
 def test_login_invalid_login(driver, creds):
     authorization_page = Authorization(driver)
     authorization_page.open_login_page()
     user_login, password = creds
     authorization_page.login(user_login, password)
-    assert authorization_page.error_message() == "Неверный логин или пароль."
+    authorization_page.verify_invalid_login_error()
 

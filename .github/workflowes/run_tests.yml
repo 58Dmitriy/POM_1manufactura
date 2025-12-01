@@ -1,0 +1,84 @@
+name: Automated tests #название
+
+on: # когда / в какой ситуации запускать
+#  push # когда сделали push
+  workflow_dispatch:
+    inputs: # для ручного запуска тестов
+      deployment_target: # для настройки команды запуска тестов
+        description: Choose target
+        required: true # чтобы не было возможности запуска без конкретной команды
+        default: no_authorization
+        type: choice
+        options:
+          - no_authorization
+          - run tests
+
+
+jobs:
+  tests: # название jobы 'tests'
+#    runs-on: windows-latest # в виртуальную машину установить указанную ОС последней версии
+    runs-on: [self-hosted, windows, x64, windows-10] # устанавливаем windows-10
+
+    steps: # шаги для запуска тестов
+      - name: Checkout repository
+        # 'uses' когда хотим задействовать action написанный за нас / уже существует
+        uses: actions/checkout@v4
+      - name: setup Python # устанавливаем Python
+        uses: actions/setup-python@v5
+        with: # дополнительная настройка 'with'
+          python-version: "3.13" # указываем нужную версию python
+#      - name: Install Chrome
+        # 'run' когда сами указываем команду которую необходимо выполнить
+#        run: sudo apt-get install google-chrome-stable # установить последнюю стабильную версию google-chrome
+
+      - name: Setup Chrome for Testing with WebDriver
+        shell: pwsh
+        run: |
+          $CHROME_VERSION = "142.0.7444.60"
+          $CHROME_DIR = "$env:RUNNER_TEMP\chrome-for-testing"
+
+          # Создаем директории
+          New-Item -ItemType Directory -Force -Path "$CHROME_DIR"
+          New-Item -ItemType Directory -Force -Path "$CHROME_DIR\chrome"
+          New-Item -ItemType Directory -Force -Path "$CHROME_DIR\driver"
+
+          # Скачиваем Chrome for Testing
+          $chromeUrl = "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/win64/chrome-win64.zip"
+          $chromeZip = "$CHROME_DIR\chrome.zip"
+
+          Write-Host "Downloading Chrome for Testing..."
+          Invoke-WebRequest -Uri $chromeUrl -OutFile $chromeZip -TimeoutSec 300
+
+          # Скачиваем ChromeDriver
+          $driverUrl = "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/win64/chromedriver-win64.zip"
+          $driverZip = "$CHROME_DIR\chromedriver.zip"
+
+          Write-Host "Downloading ChromeDriver..."
+          Invoke-WebRequest -Uri $driverUrl -OutFile $driverZip -TimeoutSec 300
+
+          # Распаковываем
+          Expand-Archive -Path $chromeZip -DestinationPath "$CHROME_DIR\chrome" -Force
+          Expand-Archive -Path $driverZip -DestinationPath "$CHROME_DIR\driver" -Force
+
+          # Добавляем в PATH
+          $chromePath = "$CHROME_DIR\chrome\chrome-win64"
+          $driverPath = "$CHROME_DIR\driver\chromedriver-win64"
+
+          echo "$chromePath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "$driverPath" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+
+          # Проверяем
+          Write-Host "=== Проверка установки ==="
+          & "$chromePath\chrome.exe" --version
+          & "$driverPath\chromedriver.exe" --version
+
+      - name: install dependencies # устанавливаем зависимости
+        run: pip install -r requirements.txt
+      - name: no_authorization
+        if: "github.event.inputs.deployment_target == 'no_authorization'"
+        # запускать только когда выбрано 'options:- no_authorization'
+        run: pytest -m no_authorization
+      - name: run tests
+        if: "github.event.inputs.deployment_target == 'run tests'"
+        # запускать только когда выбрано 'options:- run tests'
+        run: pytest

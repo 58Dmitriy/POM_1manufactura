@@ -21,8 +21,21 @@ class OrderPage(BasePage):
                 EC.visibility_of_element_located(self.TITLE)
             )
             result = element.text
-            allure.attach(result, name="Текст заголовка", attachment_type=AttachmentType.TEXT)
+            allure.attach(result,
+                          name="Текст заголовка",
+                          attachment_type=AttachmentType.TEXT
+                          )
             return result
         except TimeoutException:
-            allure.attach(f"❌ Не появился за {timeout}сек", name="Текст заголовка", attachment_type=AttachmentType.TEXT)
+            allure.attach(f"❌ Не появился за {timeout}сек",
+                          name="Текст заголовка",
+                          attachment_type=AttachmentType.TEXT
+                          )
             raise Exception(f"Заголовок не появился за {timeout} секунд")
+
+    @allure.step("Проверить, что открыта страница 'Оплата при получении'")
+    def verify_payment_page_opened(self):
+        actual_title = self.title().lower()
+        expected_title = "оплата при получении (картой или наличными при получении заказа)"
+        assert actual_title == expected_title, \
+            f"Заголовок страницы '{actual_title}' не соответствует ожидаемому '{expected_title}'"
