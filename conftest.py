@@ -11,7 +11,7 @@ pytest_plugins = ["fixtures.parametrize_fixtures"]
 def driver():
     """Фикстура для запуска и завершения браузера"""
     options = Options()
-    options.add_argument('--headless')
+    # options.add_argument('--headless')
     options.add_argument('--start-maximized')
     with allure.step("Запуск Chrome браузера"):
         driver = webdriver.Chrome(options=options)
