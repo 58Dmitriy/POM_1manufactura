@@ -11,6 +11,7 @@ on: # когда / в какой ситуации запускать
         type: choice
         options:
           - no_authorization
+          - login
           - run tests
 
 
@@ -50,6 +51,7 @@ jobs:
 
       - name: install dependencies # устанавливаем зависимости
         run: pip install -r requirements.txt
+
       - name: no_authorization
         if: "github.event.inputs.deployment_target == 'no_authorization'"
         # запускать только когда выбрано 'options:- no_authorization'
@@ -58,3 +60,6 @@ jobs:
         if: "github.event.inputs.deployment_target == 'run tests'"
         # запускать только когда выбрано 'options:- run tests'
         run: pytest
+      - name: login
+        if: "github.event.inputs.deployment_target == 'login'"
+        run: pytest -m login

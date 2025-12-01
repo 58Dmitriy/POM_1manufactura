@@ -8,6 +8,7 @@ import allure
 @allure.feature("Authentication")
 @pytest.mark.ui
 @pytest.mark.smoke
+@pytest.mark.login
 @allure.title("Успешная авторизация")
 def test_successful_login(driver):
     authorization_page = Authorization(driver)
