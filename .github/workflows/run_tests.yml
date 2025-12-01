@@ -27,9 +27,27 @@ jobs:
         uses: actions/setup-python@v5
         with: # дополнительная настройка 'with'
           python-version: "3.11" # указываем нужную версию python
-      - name: Install Chrome
+      # - name: Install Chrome
         # 'run' когда сами указываем команду которую необходимо выполнить
-        run: sudo apt-get install google-chrome-stable # установить последнюю стабильную версию google-chrome
+        # run: sudo apt-get install google-chrome-stable # установить последнюю стабильную версию google-chrome
+      - name: Install Latest Chrome
+        shell: pwsh
+        run: |
+          # Скачиваем установщик
+          $installer = "$env:TEMP\chrome_installer.exe"
+          Invoke-WebRequest -Uri "https://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile $installer
+          
+          # Устанавливаем
+          & $installer /silent /install
+          
+          # Ждём установки
+          Start-Sleep -Seconds 10
+          
+          # Проверяем
+          $chromePath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
+          if (Test-Path $chromePath) {
+            & $chromePath --version
+          }
 
       # - name: Setup Chrome for Testing with WebDriver
       #   shell: pwsh
