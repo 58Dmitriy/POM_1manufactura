@@ -79,7 +79,7 @@ jobs:
     needs: tests # для выполнения jobы generate-report необходимы результаты jobы tests
     name: Generate Allure Reports
     steps:
-      - uses: action/setup-java@v4
+      - uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
