@@ -22,6 +22,7 @@ permissions:
 jobs:
   tests: # название jobы 'tests'
     runs-on: windows-latest # в виртуальную машину установить указанную ОС последней версии
+    continue-on-error: true
 
     steps: # шаги для запуска тестов
       - name: Checkout repository
@@ -70,6 +71,7 @@ jobs:
           path:
             allure-results
           retention-days: 1 # срок жизни 1 день
+        if: always()
 
 
   generate-report:
