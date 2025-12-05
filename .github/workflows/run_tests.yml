@@ -7,13 +7,17 @@ on: # когда / в какой ситуации запускать
       deployment_target: # для настройки команды запуска тестов
         description: Choose target
         required: true # чтобы не было возможности запуска без конкретной команды
-        default: no_authorization
+        default: login
         type: choice
         options:
-          - no_authorization
           - login
           - run tests
 
+# Для публикации отчётов на GitHub
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   tests: # название jobы 'tests'
@@ -52,14 +56,64 @@ jobs:
       - name: install dependencies # устанавливаем зависимости
         run: pip install -r requirements.txt
 
-      - name: no_authorization
-        if: "github.event.inputs.deployment_target == 'no_authorization'"
-        # запускать только когда выбрано 'options:- no_authorization'
-        run: pytest -m no_authorization
       - name: run tests
         if: "github.event.inputs.deployment_target == 'run tests'"
         # запускать только когда выбрано 'options:- run tests'
-        run: pytest
+        run: pytest --alluredir=allure-results
       - name: login
         if: "github.event.inputs.deployment_target == 'login'"
-        run: pytest -m login
+        run: pytest -m login --alluredir=allure-results
+      - name: Store allure results # Сохраняем отчёт для дальнейшего скачивания
+        uses: action/upload-artifact@v4
+        with:
+          name: allure-results
+          path:
+            allure-results
+          retention-days: 1 # срок жизни 1 день
+
+
+  generate-report:
+    runs-on: windows-latest
+    needs: tests # для выполнения jobы generate-report необходимы результаты jobы tests
+    name: Generate Allure Reports
+    steps:
+      - uses: action/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'maven'
+      # Скачиваем ранее сохранёный отчёт на вторую машину
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+      # Установка Allure
+      - name: Install Allure
+        run: |
+          choco install allure
+        shell: powershell
+
+      # Генерация отчета из результатов тестов
+      - name: Generate Allure Report
+        run: allure generate allure-results --clean -o _site
+
+      # Сохранение для дальнейшего использования
+      - name: Store generated report
+        uses: actions/upload-artifact@v4
+        with:
+          name: _site
+          path:
+            _site
+          retention-days: 1
+
+  publish-reports:
+    runs-on: windows-latest
+    needs:  generate-report
+    name: Report publication
+    steps:
+      # Скачиваем ранее сохранёный отчёт на третью машину
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

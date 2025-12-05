@@ -27,7 +27,7 @@ def test_successful_login(driver):
 )
 
 @allure.feature("Authentication")
-@pytest.mark.no_authorization
+@pytest.mark.login
 @pytest.mark.ui
 @pytest.mark.smoke
 @allure.title("Не успешная авторизация")
