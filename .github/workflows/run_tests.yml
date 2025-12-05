@@ -73,7 +73,7 @@ jobs:
           retention-days: 1 # срок жизни 1 день
         if: always()
 
-generate-report:
+  generate-report:
     runs-on: windows-latest
     needs: tests
     steps:
