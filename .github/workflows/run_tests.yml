@@ -73,38 +73,51 @@ jobs:
           retention-days: 1 # срок жизни 1 день
         if: always()
 
-
   generate-report:
     runs-on: windows-latest
-    needs: tests # для выполнения jobы generate-report необходимы результаты jobы tests
+    needs: tests
     name: Generate Allure Reports
     steps:
-      - uses: actions/setup-java@v4
+      - name: Download allure results
+        uses: actions/download-artifact@v4
+        with:
+          name: allure-results
+          path: ./allure-results
+      
+      - name: Setup Java for Allure
+        uses: actions/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
-          
-      # Скачиваем ранее сохранёный отчёт на вторую машину
-      - name: Download all workflow run artifacts
-        uses: actions/download-artifact@v4
-      # Установка Allure
-      - name: Install Allure
+          cache: ''
+      
+      - name: Install Allure (Download manually)
+        shell: pwsh
         run: |
-          choco install allure
-        shell: powershell
-
-      # Генерация отчета из результатов тестов
+          # Скачиваем Allure 2.24.0
+          $allureVersion = "2.24.0"
+          $url = "https://github.com/allure-framework/allure2/releases/download/$allureVersion/allure-$allureVersion.zip"
+          $zipPath = "$env:TEMP\allure-$allureVersion.zip"
+          $extractPath = "$env:TEMP\allure"
+          
+          Write-Host "Downloading Allure from: $url"
+          Invoke-WebRequest -Uri $url -OutFile $zipPath
+          
+          Write-Host "Extracting Allure..."
+          Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
+          
+          # Добавляем allure в PATH для текущей сессии
+          $allureBinPath = "$extractPath\allure-$allureVersion\bin"
+          $env:PATH = "$allureBinPath;$env:PATH"
+          
+          # Добавляем в PATH для следующих шагов
+          echo "$allureBinPath" | Out-File -FilePath $env:GITHUB_PATH -Append
+          
+          Write-Host "Allure installed successfully"
+          allure --version
+      
       - name: Generate Allure Report
-        run: allure generate allure-results --clean -o _site
-
-      # Сохранение для дальнейшего использования
-      - name: Store generated report
-        uses: actions/upload-artifact@v4
-        with:
-          name: _site
-          path:
-            _site
-          retention-days: 1
+        run: allure generate allure-results --clean -o ./_site
 
   publish-reports:
     runs-on: windows-latest
