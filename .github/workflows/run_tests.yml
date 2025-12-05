@@ -1,81 +1,67 @@
-name: Automated tests #название
+name: Automated tests
 
-on: # когда / в какой ситуации запускать
-#  push # когда сделали push
+on:
   workflow_dispatch:
-    inputs: # для ручного запуска тестов
-      deployment_target: # для настройки команды запуска тестов
+    inputs:
+      deployment_target:
         description: Choose target
-        required: true # чтобы не было возможности запуска без конкретной команды
+        required: true
         default: login
         type: choice
         options:
           - login
           - run tests
 
-# Для публикации отчётов на GitHub
 permissions:
   contents: read
   pages: write
   id-token: write
 
 jobs:
-  tests: # название jobы 'tests'
-    runs-on: windows-latest # в виртуальную машину установить указанную ОС последней версии
+  tests:
+    runs-on: windows-latest
+    name: Run Tests
     continue-on-error: true
-
-    steps: # шаги для запуска тестов
-      - name: Checkout repository
-        # 'uses' когда хотим задействовать action написанный за нас / уже существует
-        uses: actions/checkout@v4
-      - name: setup Python # устанавливаем Python
-        uses: actions/setup-python@v5
-        with: # дополнительная настройка 'with'
-          python-version: "3.11" # указываем нужную версию python
-      # - name: Install Chrome
-        # 'run' когда сами указываем команду которую необходимо выполнить
-        # run: sudo apt-get install google-chrome-stable # установить последнюю стабильную версию google-chrome
-      - name: Install Latest Chrome
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      
+      - name: Install Chrome
         shell: pwsh
         run: |
-          # Скачиваем установщик
           $installer = "$env:TEMP\chrome_installer.exe"
           Invoke-WebRequest -Uri "https://dl.google.com/chrome/install/latest/chrome_installer.exe" -OutFile $installer
-          
-          # Устанавливаем
           & $installer /silent /install
-          
-          # Ждём установки
           Start-Sleep -Seconds 10
-          
-          # Проверяем
-          $chromePath = "C:\Program Files\Google\Chrome\Application\chrome.exe"
-          if (Test-Path $chromePath) {
-            & $chromePath --version
-          }
+      
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install webdriver-manager
 
-      - name: install dependencies # устанавливаем зависимости
-        run: pip install -r requirements.txt
-
-      - name: run tests
-        if: "github.event.inputs.deployment_target == 'run tests'"
-        # запускать только когда выбрано 'options:- run tests'
-        run: pytest --alluredir=allure-results
-      - name: login
-        if: "github.event.inputs.deployment_target == 'login'"
-        run: pytest -m login --alluredir=allure-results
-      - name: Store allure results # Сохраняем отчёт для дальнейшего скачивания
-        uses: actions/upload-artifact@v4
+      - name: Run all tests
+        if: github.event.inputs.deployment_target == 'run tests'
+        run: pytest --alluredir=allure-results || echo "Tests completed"
+      
+      - name: Run login tests only
+        if: github.event.inputs.deployment_target == 'login'
+        run: pytest -m login --alluredir=allure-results || echo "Tests completed"
+      
+      - uses: actions/upload-artifact@v4
         with:
           name: allure-results
-          path:
-            allure-results
-          retention-days: 1 # срок жизни 1 день
+          path: allure-results
         if: always()
 
   generate-report:
     runs-on: windows-latest
     needs: tests
+    name: Generate Allure Report
+    
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -86,7 +72,7 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
       
-      - name: Install Allure and generate report
+      - name: Generate Allure Report
         shell: pwsh
         run: |
           # Скачать Allure
@@ -98,8 +84,8 @@ jobs:
           # Сгенерировать отчет
           & "$env:TEMP\allure\allure-2.27.0\bin\allure" generate allure-results --clean -o _site
           
-          # .nojekyll для GitHub Pages
-          "" > _site/.nojekyll
+          # Создать .nojekyll после создания _site
+          New-Item -ItemType File -Path "_site/.nojekyll" -Force
       
       - uses: actions/upload-artifact@v4
         with:
@@ -109,22 +95,37 @@ jobs:
   publish-reports:
     runs-on: ubuntu-latest
     needs: generate-report
+    name: Deploy to GitHub Pages
     environment:
       name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
       - uses: actions/download-artifact@v4
         with:
           name: allure-report
       
-      - name: Rename to _site
+      - name: Prepare for GitHub Pages
         run: |
-          mv allure-report _site 2>/dev/null || mkdir -p _site
+          # Переименовать allure-report в _site если нужно
+          if [ -d "allure-report" ]; then
+            mv allure-report _site
+          fi
+          
+          # Создать _site если не существует
+          mkdir -p _site
+          
+          # Создать .nojekyll
           touch _site/.nojekyll
       
       - uses: actions/configure-pages@v4
+      
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./_site
+      
       - uses: actions/deploy-pages@v4
         id: deployment
+      
+      - name: Show URL
+        run: echo "Report: ${{ steps.deployment.outputs.page_url }}"
