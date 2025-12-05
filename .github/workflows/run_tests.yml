@@ -127,40 +127,46 @@ jobs:
           retention-days: 1
 
   publish-reports:
-    runs-on: ubuntu-latest 
+    runs-on: ubuntu-latest
     needs: generate-report
-    name: Deploy Allure Report to GitHub Pages
+    name: Deploy to GitHub Pages
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     
     steps:
-      # Скачиваем отчёт с Windows машины
       - name: Download generated report
         uses: actions/download-artifact@v4
         with:
-          name: allure-report  # Укажите конкретное имя артефакта
-            
-      # Настройка GitHub Pages
+          name: allure-report
+      
+      - name: Ensure _site directory exists
+        run: |
+          # Гарантируем что _site существует
+          mkdir -p _site
+          
+          # Если есть содержимое в корне, перемещаем его в _site
+          for file in *; do
+            if [ "$file" != "_site" ] && [ -f "$file" ]; then
+              mv "$file" _site/
+            fi
+          done
+          
+          # Если _site пустой, создаем index.html
+          if [ ! -f "_site/index.html" ]; then
+            echo "<h1>Allure Report</h1>" > _site/index.html
+          fi
+          
+          ls -la _site/
+      
       - name: Setup Pages
         uses: actions/configure-pages@v4
       
-      # Загрузка артефакта для Pages
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./_site  # Путь к папке с отчетом
+          path: ./_site
       
-      # Деплой на GitHub Pages
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-      
-      # Показать ссылку
-      - name: Show report URL
-        run: |
-          echo "=========================================="
-          echo "✅ Allure отчет успешно задеплоен!"
-          echo "📊 Отчет доступен по ссылке:"
-          echo "   ${{ steps.deployment.outputs.page_url }}"
-          echo "=========================================="
