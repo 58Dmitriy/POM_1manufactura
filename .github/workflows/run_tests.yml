@@ -119,6 +119,13 @@ jobs:
       - name: Generate Allure Report
         run: allure generate allure-results --clean -o ./_site
 
+      - name: Store generated report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-report  # Это имя используется в publish-reports
+          path: _site
+          retention-days: 1
+
   publish-reports:
     runs-on: ubuntu-latest 
     needs: generate-report
