@@ -91,38 +91,67 @@ jobs:
           java-version: '17'
           cache: ''
       
-      - name: Install Allure (Download manually)
+      - name: Install Allure
         shell: pwsh
         run: |
-          # Скачиваем Allure 2.24.0
-          $allureVersion = "2.24.0"
+          $allureVersion = "2.27.0"
           $url = "https://github.com/allure-framework/allure2/releases/download/$allureVersion/allure-$allureVersion.zip"
           $zipPath = "$env:TEMP\allure-$allureVersion.zip"
           $extractPath = "$env:TEMP\allure"
           
-          Write-Host "Downloading Allure from: $url"
           Invoke-WebRequest -Uri $url -OutFile $zipPath
-          
-          Write-Host "Extracting Allure..."
           Expand-Archive -Path $zipPath -DestinationPath $extractPath -Force
           
-          # Добавляем allure в PATH для текущей сессии
           $allureBinPath = "$extractPath\allure-$allureVersion\bin"
-          $env:PATH = "$allureBinPath;$env:PATH"
-          
-          # Добавляем в PATH для следующих шагов
           echo "$allureBinPath" | Out-File -FilePath $env:GITHUB_PATH -Append
-          
-          Write-Host "Allure installed successfully"
-          allure --version
+          $env:PATH = "$allureBinPath;$env:PATH"
+      
+      - name: Check allure results
+        shell: pwsh
+        run: |
+          Write-Host "Проверка allure-results:"
+          if (Test-Path "allure-results") {
+            $files = Get-ChildItem "allure-results\" -Recurse -File
+            Write-Host "Найдено $($files.Count) файлов"
+            if ($files.Count -gt 0) {
+              $files | Select-Object -First 5 Name
+            }
+          } else {
+            Write-Host "❌ Папка allure-results не найдена"
+          }
       
       - name: Generate Allure Report
-        run: allure generate allure-results --clean -o ./_site
-
-      - name: Store generated report as artifact
+        run: |
+          # Генерируем отчет
+          allure generate allure-results --clean -o ./_site
+          
+          # Создаем .nojekyll для GitHub Pages
+          touch ./_site/.nojekyll
+          
+          # Проверяем что сгенерировалось
+          echo "=== Содержимое _site после генерации ==="
+          find ./_site -type f | head -20
+      
+      - name: Verify report content
+        shell: pwsh
+        run: |
+          Write-Host "Проверка отчета:"
+          if (Test-Path "_site\index.html") {
+            Write-Host "✅ index.html найден"
+            # Проверяем размер
+            $size = (Get-Item "_site\index.html").Length
+            Write-Host "Размер index.html: $size байт"
+          }
+          
+          if (Test-Path "_site\data") {
+            $dataFiles = Get-ChildItem "_site\data" -Recurse -File
+            Write-Host "✅ Найдено $($dataFiles.Count) файлов в data/"
+          }
+      
+      - name: Upload report as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: allure-report  # Это имя используется в publish-reports
+          name: allure-report
           path: _site
           retention-days: 1
 
@@ -140,24 +169,33 @@ jobs:
         with:
           name: allure-report
       
-      - name: Ensure _site directory exists
+      - name: Fix for GitHub Pages
         run: |
-          # Гарантируем что _site существует
-          mkdir -p _site
+          echo "=== Подготовка для GitHub Pages ==="
           
-          # Если есть содержимое в корне, перемещаем его в _site
-          for file in *; do
-            if [ "$file" != "_site" ] && [ -f "$file" ]; then
-              mv "$file" _site/
-            fi
-          done
-          
-          # Если _site пустой, создаем index.html
-          if [ ! -f "_site/index.html" ]; then
-            echo "<h1>Allure Report</h1>" > _site/index.html
+          # Переименовываем если нужно
+          if [ -d "allure-report" ]; then
+            mv allure-report _site
           fi
           
-          ls -la _site/
+          # Гарантируем наличие .nojekyll
+          touch _site/.nojekyll
+          
+          # Проверяем структуру
+          echo "Структура _site:"
+          find _site -type f | head -30
+          
+          # Проверяем index.html
+          if [ -f "_site/index.html" ]; then
+            echo "index.html найден, первые 10 строк:"
+            head -10 _site/index.html
+          fi
+          
+          # Проверяем папку data
+          if [ -d "_site/data" ]; then
+            echo "Папка data найдена, количество файлов:"
+            find _site/data -type f | wc -l
+          fi
       
       - name: Setup Pages
         uses: actions/configure-pages@v4
@@ -170,3 +208,9 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+      
+      - name: Show deployment URL
+        run: |
+          echo "========================================"
+          echo "✅ Allure отчет задеплоен!"
+          echo "📊 Ссылка: ${{ steps.deployment.outputs.page_url }}"
