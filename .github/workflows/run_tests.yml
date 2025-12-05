@@ -77,21 +77,18 @@ jobs:
     needs: tests # для выполнения jobы generate-report необходимы результаты jobы tests
     name: Generate Allure Reports
     steps:
-      - name: Setup Java for Allure
-        uses: actions/setup-java@v4
+      - uses: action/setup-java@v4
         with:
           distribution: 'temurin'
           java-version: '17'
+          cache: 'maven'
       # Скачиваем ранее сохранёный отчёт на вторую машину
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: allure-results
-          path: ./allure-results
-
       # Установка Allure
       - name: Install Allure
-        run: choco install allure -y
+        run: |
+          choco install allure
         shell: powershell
 
       # Генерация отчета из результатов тестов
@@ -102,7 +99,7 @@ jobs:
       - name: Store generated report
         uses: actions/upload-artifact@v4
         with:
-          name: allure-report
+          name: _site
           path:
             _site
           retention-days: 1
@@ -110,31 +107,13 @@ jobs:
   publish-reports:
     runs-on: windows-latest
     needs:  generate-report
-    name: Publish to GitHub Pages
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-
+    name: Report publication
     steps:
-      - name: Download generated report
+      # Скачиваем ранее сохранёный отчёт на третью машину
+      - name: Download all workflow run artifacts
         uses: actions/download-artifact@v4
-        with:
-          name: allure-report
-          path: ./_site
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./_site
-
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Show deployment URL
-        shell: pwsh
-        run:
-          Write-Host "Allure report is available at: ${{ steps.deployment.outputs.page_url }}"
