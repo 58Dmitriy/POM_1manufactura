@@ -84,7 +84,7 @@ jobs:
           # Сгенерировать отчет
           & "$env:TEMP\allure\allure-2.27.0\bin\allure" generate allure-results --clean -o _site
           
-          # Создать .nojekyll после создания _site
+          # Создать .nojekyll
           New-Item -ItemType File -Path "_site/.nojekyll" -Force
       
       - uses: actions/upload-artifact@v4
@@ -107,25 +107,15 @@ jobs:
       
       - name: Prepare for GitHub Pages
         run: |
-          # Переименовать allure-report в _site если нужно
           if [ -d "allure-report" ]; then
             mv allure-report _site
           fi
-          
-          # Создать _site если не существует
           mkdir -p _site
-          
-          # Создать .nojekyll
           touch _site/.nojekyll
       
       - uses: actions/configure-pages@v4
-      
       - uses: actions/upload-pages-artifact@v3
         with:
           path: ./_site
-      
       - uses: actions/deploy-pages@v4
         id: deployment
-      
-      - name: Show URL
-        run: echo "Report: ${{ steps.deployment.outputs.page_url }}"
