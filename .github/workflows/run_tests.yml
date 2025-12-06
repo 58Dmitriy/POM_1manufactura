@@ -72,15 +72,3 @@ jobs:
           path: ./_site
       - uses: actions/deploy-pages@v4
 
-      - name: Send notification with report link
-        if: success()
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const reportUrl = `https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/`;
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `✅ Тесты завершены! Allure отчет доступен: ${reportUrl}`
-            });
